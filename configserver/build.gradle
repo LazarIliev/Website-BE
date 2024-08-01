@@ -35,3 +35,8 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.named("bootBuildImage") {
+//	buildpacks = ["file:///path/to/example-buildpack.tgz", "urn:cnb:builder:paketo-buildpacks/java"]
+	imageName = 'my-spring-boot-app:latest'
+}
