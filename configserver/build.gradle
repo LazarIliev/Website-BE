@@ -37,6 +37,17 @@ tasks.named('test') {
 }
 
 tasks.named("bootBuildImage") {
-//	buildpacks = ["file:///path/to/example-buildpack.tgz", "urn:cnb:builder:paketo-buildpacks/java"]
-	imageName = 'my-spring-boot-app:latest'
+	//builder = 'paketobuildpacks/builder-jammy-buildpackless-tiny'
+	environment["BP_HEALTH_CHECKER_ENABLED"] = "true"
+	buildpacks = [
+			//"gcr.io/paketo-buildpacks/amazon-corretto:latest",
+			"gcr.io/paketo-buildpacks/java",
+			//"gcr.io/paketo-buildpacks/spring-boot",
+			"gcr.io/paketo-buildpacks/health-checker:1.4"
+	]
+//	environment = [
+//			"BP_JVM_VERSION": "17",
+//			"BP_HEALTH_CHECKER_ENABLED": "true",
+//			"THC_PORT": "8071"
+//	]
 }

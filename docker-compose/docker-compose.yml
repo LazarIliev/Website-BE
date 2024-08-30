@@ -1,0 +1,115 @@
+services:
+  configserver:
+    image: "configserver:0.0.1-SNAPSHOT"
+    container_name: configserver-ms
+    ports:
+      - "8071:8071"
+    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://configserver-ms:8071/actuator/health/readiness"]
+#      test: "wget -T5 -qO- http://localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      test: [ "CMD", "/cnb/process/health-check" ]
+#      test: "curl --fail --silent http://localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+    environment:
+      THC_PORT: 8071
+      THC_PATH: /actuator/health
+
+  eurekaserver:
+    image: "eurekaserver:0.0.1-SNAPSHOT"
+    container_name: eurekaserver-ms
+    ports:
+      - "8070:8070"
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8070/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+    environment:
+      SPRING_APPLICATION_NAME: "eurekaserver"
+
+  profile:
+    image: "profile:0.0.1-SNAPSHOT"
+    container_name: profile-ms
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    environment:
+      SPRING_APPLICATION_NAME: "profile"
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
+  news:
+    image: "news:0.0.1-SNAPSHOT"
+    container_name: news-ms
+    ports:
+      - "8090:8090"
+    healthcheck:
+      test: "curl --fail --silent localhost:8090/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    environment:
+      SPRING_APPLICATION_NAME: "news"
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
+  work:
+    image: "work:0.0.1-SNAPSHOT"
+    container_name: work-ms
+    ports:
+      - "9000:9000"
+    healthcheck:
+      test: "curl --fail --silent localhost:9000/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    environment:
+      SPRING_APPLICATION_NAME: "cards"
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
+  gatewayserver:
+    image: "gatewayserver:0.0.1-SNAPSHOT"
+    container_name: gatewayserver-ms
+    ports:
+      - "8072:8072"
+    depends_on:
+      profile:
+        condition: service_healthy
+      work:
+        condition: service_healthy
+      news:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "gatewayserver"
+#      SPRING_DATA_REDIS_CONNECT-TIMEOUT: 2s
+#      SPRING_DATA_REDIS_HOST: redis
+#      SPRING_DATA_REDIS_PORT: 6379
+#      SPRING_DATA_REDIS_TIMEOUT: 1s
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
+networks:
+  lazar:
+    driver: "bridge"
