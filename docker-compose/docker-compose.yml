@@ -5,10 +5,7 @@ services:
     ports:
       - "8071:8071"
     healthcheck:
-#      test: ["CMD", "curl", "-f", "http://configserver-ms:8071/actuator/health/readiness"]
-#      test: "wget -T5 -qO- http://localhost:8071/actuator/health/readiness | grep UP || exit 1"
       test: [ "CMD", "/cnb/process/health-check" ]
-#      test: "curl --fail --silent http://localhost:8071/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
       timeout: 5s
       retries: 10
@@ -26,7 +23,7 @@ services:
     ports:
       - "8070:8070"
     healthcheck:
-      test: "curl --fail --silent http://localhost:8070/actuator/health/readiness | grep UP || exit 1"
+      test: [ "CMD", "/cnb/process/health-check" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -36,6 +33,8 @@ services:
       service: microservice-configserver-config
     environment:
       SPRING_APPLICATION_NAME: "eurekaserver"
+      THC_PORT: 8070
+      THC_PATH: /actuator/health
 
   profile:
     image: "profile:0.0.1-SNAPSHOT"
@@ -43,13 +42,16 @@ services:
     ports:
       - "8080:8080"
     healthcheck:
-      test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
+      test: [ "CMD", "/cnb/process/health-check" ]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "profile"
+      SPRING_PROFILES_ACTIVE: "prod"
+      THC_PORT: 8080
+      THC_PATH: /actuator/health
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -58,15 +60,17 @@ services:
     image: "news:0.0.1-SNAPSHOT"
     container_name: news-ms
     ports:
-      - "8090:8090"
+      - "9000:9000"
     healthcheck:
-      test: "curl --fail --silent localhost:8090/actuator/health/readiness | grep UP || exit 1"
+      test: [ "CMD", "/cnb/process/health-check" ]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "news"
+      THC_PORT: 9000
+      THC_PATH: /actuator/health
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -75,15 +79,17 @@ services:
     image: "work:0.0.1-SNAPSHOT"
     container_name: work-ms
     ports:
-      - "9000:9000"
+      - "8090:8090"
     healthcheck:
-      test: "curl --fail --silent localhost:9000/actuator/health/readiness | grep UP || exit 1"
+      test: [ "CMD", "/cnb/process/health-check" ]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 10s
     environment:
-      SPRING_APPLICATION_NAME: "cards"
+      SPRING_APPLICATION_NAME: "work"
+      THC_PORT: 8090
+      THC_PATH: /actuator/health
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -102,10 +108,6 @@ services:
         condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "gatewayserver"
-#      SPRING_DATA_REDIS_CONNECT-TIMEOUT: 2s
-#      SPRING_DATA_REDIS_HOST: redis
-#      SPRING_DATA_REDIS_PORT: 6379
-#      SPRING_DATA_REDIS_TIMEOUT: 1s
     extends:
       file: common-config.yml
       service: microservice-eureka-config

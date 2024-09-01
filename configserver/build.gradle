@@ -37,12 +37,10 @@ tasks.named('test') {
 }
 
 tasks.named("bootBuildImage") {
-	//builder = 'paketobuildpacks/builder-jammy-buildpackless-tiny'
+	builder = 'paketobuildpacks/builder-jammy-buildpackless-tiny'
 	environment["BP_HEALTH_CHECKER_ENABLED"] = "true"
 	buildpacks = [
-			//"gcr.io/paketo-buildpacks/amazon-corretto:latest",
 			"gcr.io/paketo-buildpacks/java",
-			//"gcr.io/paketo-buildpacks/spring-boot",
 			"gcr.io/paketo-buildpacks/health-checker:1.4"
 	]
 //	environment = [

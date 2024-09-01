@@ -36,3 +36,12 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.named("bootBuildImage") {
+	builder = 'paketobuildpacks/builder-jammy-buildpackless-tiny'
+	environment["BP_HEALTH_CHECKER_ENABLED"] = "true"
+	buildpacks = [
+			"gcr.io/paketo-buildpacks/java",
+			"gcr.io/paketo-buildpacks/health-checker:1.4"
+	]
+}
