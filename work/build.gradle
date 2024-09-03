@@ -48,4 +48,13 @@ tasks.named("bootBuildImage") {
 			"gcr.io/paketo-buildpacks/java",
 			"gcr.io/paketo-buildpacks/health-checker:1.4"
 	]
+	imageName = "${project.name}:s11"
+}
+
+tasks.register('cleanAssembleBuildImage') {
+	dependsOn 'clean'
+	dependsOn 'assemble'
+	dependsOn 'bootBuildImage'
+	tasks.findByName('assemble').mustRunAfter 'clean'
+	tasks.findByName('bootBuildImage').mustRunAfter 'assemble'
 }

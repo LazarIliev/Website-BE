@@ -1,6 +1,6 @@
 services:
   configserver:
-    image: "configserver:0.0.1-SNAPSHOT"
+    image: "configserver:s11"
     container_name: configserver-ms
     ports:
       - "8071:8071"
@@ -18,7 +18,7 @@ services:
       THC_PATH: /actuator/health
 
   eurekaserver:
-    image: "eurekaserver:0.0.1-SNAPSHOT"
+    image: "eurekaserver:s11"
     container_name: eurekaserver-ms
     ports:
       - "8070:8070"
@@ -37,7 +37,7 @@ services:
       THC_PATH: /actuator/health
 
   profile:
-    image: "profile:0.0.1-SNAPSHOT"
+    image: "profile:s11"
     container_name: profile-ms
     ports:
       - "8080:8080"
@@ -57,7 +57,7 @@ services:
       service: microservice-eureka-config
 
   news:
-    image: "news:0.0.1-SNAPSHOT"
+    image: "news:s11"
     container_name: news-ms
     ports:
       - "9000:9000"
@@ -76,7 +76,7 @@ services:
       service: microservice-eureka-config
 
   work:
-    image: "work:0.0.1-SNAPSHOT"
+    image: "work:s11"
     container_name: work-ms
     ports:
       - "8090:8090"
@@ -95,7 +95,7 @@ services:
       service: microservice-eureka-config
 
   gatewayserver:
-    image: "gatewayserver:0.0.1-SNAPSHOT"
+    image: "gatewayserver:s11"
     container_name: gatewayserver-ms
     ports:
       - "8072:8072"
